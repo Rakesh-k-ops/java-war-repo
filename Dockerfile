@@ -10,9 +10,9 @@ FROM tomcat:10.1-jdk17
 
 WORKDIR /usr/local/tomcat/webapps/
 
-COPY --from=builder /ops-app/target/*.war rakesh.war
+COPY --from=builder /ops-app/target/*.war sachin.war
 RUN ls -l /usr/local/tomcat/webapps/
-RUN chmod 644 /usr/local/tomcat/webapps/rakesh.war
+RUN chmod 644 /usr/local/tomcat/webapps/sachin.war
 
 EXPOSE 8080
 
