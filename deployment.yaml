@@ -14,8 +14,8 @@ spec:
         app: coinbase
     spec:
       containers:
-        - image: rakesh994/coinbase:df8ff6c
-          name: http
+        - name: http
+          image: rakesh994/coinbase:566af09
           ports:
             - containerPort: 80
 ---
@@ -23,16 +23,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: coin-service
+  labels:
+    app.kubernetes.io/instance: coinbase-app
 spec:
-  type: NodePort
   selector:
     app: coinbase
   ports:
-    - protocol: TCP
-      port: 8080
-      targetPort: 8080
+    - port: 8080         # Service port
+      targetPort: 80     # Container port
       nodePort: 30080
-  template:
-    spec:
-      containers:
-        - image: rakesh994/coinbase:df8ff6c
+      protocol: TCP
+  type: NodePort
