@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
         - name: http
-          image: rakesh994/coinbase:8e4f061
+          image: rakesh994/coinbase:7ec177a
           ports:
             - containerPort: 80
