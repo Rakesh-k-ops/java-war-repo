@@ -4,7 +4,7 @@
 </head>
 <body style="text-align: center">
 <h1>Congratulations! Rakesh</h1>
-<img src="boxfuse.png">
+<img src="boxf">
 
 <h2>You have successfully launched your end to end project!</h2>
 
