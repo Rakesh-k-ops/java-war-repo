@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: coin-service
+  labels:
+    app.kubernetes.io/instance: coinbase-app
+spec:
+  selector:
+    app: coinbase
+  ports:
+    - port: 8080 # Service port
+      targetPort: 80 # Container port
+      nodePort: 30080
+      protocol: TCP
+  type: NodePort
