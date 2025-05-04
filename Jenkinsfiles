@@ -4,8 +4,10 @@ pipeline {
     environment {
         IMAGE_NAME = 'kubernates'
         DOCKERHUB_REPO = 'rakesh994/coinbase'
-        MANIFEST_PATH = 'deployment.yaml'
+        MANIFEST_PATH = 'deployment.yaml'  // This should contain only the Deployment YAML
         YQ_BIN = "${WORKSPACE}/.yq-bin/yq"
+        ARGOCD_SERVER = '18.235.116.205:32417'
+        ARGOCD_APP = 'coinbase-app'
     }
 
     stages {
@@ -60,22 +62,63 @@ pipeline {
         }
 
         stage('Update Deployment YAML') {
-    steps {
-        withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
-            sh '''
-                git config --global user.email "rakeshkdevoops001@gmail.com"
-                git config --global user.name "Rakesh-k-ops"
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+                    sh '''
+                        git config --global user.email "rakeshkdevoops001@gmail.com"
+                        git config --global user.name "Rakesh-k-ops"
 
-                echo "Updating deployment.yaml with new image"
-                ./.yq-bin/yq eval ".spec.template.spec.containers[0].image = \\"${FULL_IMAGE}\\"" -i deployment.yaml
+                        echo "Updating deployment.yaml with new image"
+                        ./.yq-bin/yq eval ".spec.template.spec.containers[0].image = \\"${FULL_IMAGE}\\"" -i ${MANIFEST_PATH}
 
-                git add deployment.yaml
-                git commit -m "Update image to ${FULL_IMAGE}"
-                git push https://${GIT_USER}:${GIT_PASS}@github.com/Rakesh-k-ops/java-war-repo.git HEAD:main
-            '''
+                        git add ${MANIFEST_PATH}
+                        git commit -m "Update image to ${FULL_IMAGE}"
+                        git push https://${GIT_USER}:${GIT_PASS}@github.com/Rakesh-k-ops/java-war-repo.git HEAD:main
+                    '''
+                }
+            }
         }
-    }
-}
 
+        stage('ArgoCD App Create (if not exists)') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'argocd-creds', usernameVariable: 'ARGOCD_USER', passwordVariable: 'ARGOCD_PASS')]) {
+                    sh '''
+                        # Download ArgoCD CLI if not already present
+                        if [ ! -f "./argocd" ]; then
+                            curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+                            chmod +x argocd
+                        fi
+
+                        # Login to ArgoCD
+                        ./argocd login ${ARGOCD_SERVER} --username $ARGOCD_USER --password $ARGOCD_PASS --insecure
+
+                        # Check if the app exists
+                        if ./argocd app get ${ARGOCD_APP} > /dev/null 2>&1; then
+                            echo "ArgoCD app ${ARGOCD_APP} already exists."
+                        else
+                            echo "Creating ArgoCD app: ${ARGOCD_APP}"
+                            ./argocd app create ${ARGOCD_APP} \\
+                                --repo https://github.com/Rakesh-k-ops/java-war-repo.git \\
+                                --path . \\
+                                --dest-server https://kubernetes.default.svc \\
+                                --dest-namespace default \\
+                                --directory-recurse \\
+                                --sync-policy automated
+                        fi
+                    '''
+                }
+            }
+        }
+
+        stage('ArgoCD Deploy') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'argocd-creds', usernameVariable: 'ARGOCD_USER', passwordVariable: 'ARGOCD_PASS')]) {
+                    sh '''
+                        ./argocd login ${ARGOCD_SERVER} --username $ARGOCD_USER --password $ARGOCD_PASS --insecure
+                        ./argocd app sync ${ARGOCD_APP}
+                    '''
+                }
+            }
+        }
     }
 }
