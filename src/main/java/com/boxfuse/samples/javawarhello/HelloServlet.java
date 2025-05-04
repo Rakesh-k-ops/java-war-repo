@@ -18,7 +18,7 @@ public class HelloServlet extends HttpServlet {
             throws ServletException, IOException {
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
-        out.println("<html><head><title>Hello Page</title></head><body>");
+        out.println("<html><head><title>Hello this Page</title></head><body>");
         out.println("<h1>Hello from MySite Servlet!</h1>");
         out.println("<p>This is a response from the servlet.</p>");
         out.println("<img src='images/custom-logo.png' alt='MySite Logo' width='200' />");
