@@ -9,7 +9,7 @@ spec:
     app: coinbase
   ports:
     - port: 8080 # Service port
-      targetPort: 80 # Container port
+      targetPort: 8080 # Container port
       nodePort: 30080
       protocol: TCP
   type: NodePort
