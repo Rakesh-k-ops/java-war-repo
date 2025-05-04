@@ -14,7 +14,7 @@ spec:
         app: coinbase
     spec:
       containers:
-        - image: rakesh994/coinbase:517124f
+        - image: rakesh994/coinbase:500e9eb
           name: http
           ports:
             - containerPort: 80
@@ -35,4 +35,4 @@ spec:
   template:
     spec:
       containers:
-        - image: rakesh994/coinbase:517124f
+        - image: rakesh994/coinbase:500e9eb
