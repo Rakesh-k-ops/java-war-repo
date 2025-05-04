@@ -1,12 +1,12 @@
 <html>
 <head>
-    <title>Boxfuse Sample App: success!</title>
+    <title>Boxfuse Sample App: failure!</title>
 </head>
 <body style="text-align: center">
 <h1>Rakesh</h1>
-<img src="boxf">
+<img src="f">
 
-<h2>You have successfully launched your end to end project!</h2>
+<h2>You have  your end to end project!</h2>
 
 <p>This Instance is running on <strong><%= System.getenv("BOXFUSE_PLATFORM_NAME") %>
 </strong> and has the id <strong><%= System.getenv("BOXFUSE_INSTANCE_ID") %>
