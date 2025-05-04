@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: http
-          image: rakesh994/coinbase:25da917
+          image: rakesh994/coinbase:ca5ce47
           ports:
             - containerPort: 80
 ---
@@ -34,3 +34,7 @@ spec:
       nodePort: 30080
       protocol: TCP
   type: NodePort
+  template:
+    spec:
+      containers:
+        - image: rakesh994/coinbase:ca5ce47
